@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Time Planner</title>
+    <style>
+
+        title{
+            color: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 200px;
+            background-color: rgb(240, 125, 16);
+
+        }
+
+        #studySessions {
+            width: 100%;
+            margin-bottom: 20px;
+            background-color: rgb(236, 173, 14);
+            color: white;
+        
+        }
+
+        #schedule {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #schedule th, #schedule td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #schedule th {
+            background-color: rgb(236, 173, 14);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Study Time Planner</h2>
+
+<label for="sessionName" style="color: wheat;">Session Name:</label>
+<input type="text" id="sessionName" placeholder="e.g., Math Exam">
+
+<label for="sessionDuration" style="color: wheat;">Session Duration (minutes):</label>
+<input type="number" id="sessionDuration" placeholder="e.g., 60">
+
+<button onclick="addStudySession()" style="background-color:rgb(236, 173, 14) ;color: white;margin-bottom: 15px;margin-top: 15px;border: none; border-radius: 10px;height: 20px;">Add Study Session</button>
+
+
+<table id="studySessions">
+    <tr>
+        <th>Session Name</th>
+        <th>Duration (minutes)</th>
+        <th>Action</th>
+    </tr>
+</table>
+
+<h3 style="color: wheat;">Study Schedule</h3>
+
+<table id="schedule">
+    <tr>
+        <th>Time Slot</th>
+        <th>Session Name</th>
+    </tr>
+</table>
+
+<script>
+    let studySessions = [];
+
+    function addStudySession() {
+        const sessionName = document.getElementById('sessionName').value;
+        const sessionDuration = parseInt(document.getElementById('sessionDuration').value);
+
+        if (sessionName && !isNaN(sessionDuration) && sessionDuration > 0) {
+            studySessions.push({ name: sessionName, duration: sessionDuration });
+            updateStudySessionTable();
+            updateStudySchedule();
+        } else {
+            alert('Please enter valid session details.');
+        }
+    }
+
+    function updateStudySessionTable() {
+        const table = document.getElementById('studySessions');
+        const newRow = table.insertRow(table.rows.length);
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        const cell3 = newRow.insertCell(2);
+
+        const latestSession = studySessions[studySessions.length - 1];
+        cell1.innerHTML = latestSession.name;
+        cell2.innerHTML = latestSession.duration;
+        cell3.innerHTML = '<button onclick="removeSession(' + (studySessions.length - 1) + ')">Remove</button>';
+    }
+
+    function removeSession(index) {
+        studySessions.splice(index, 1);
+        updateStudySessionTable();
+        updateStudySchedule();
+    }
+
+    function updateStudySchedule() {
+        const scheduleTable = document.getElementById('schedule');
+        clearTable(scheduleTable);
+
+        let currentTime = new Date();
+        for (const session of studySessions) {
+            const newRow = scheduleTable.insertRow(scheduleTable.rows.length);
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+
+            cell1.innerHTML = formatTime(currentTime);
+            cell2.innerHTML = session.name;
+
+            currentTime.setMinutes(currentTime.getMinutes() + session.duration);
+        }
+    }
+
+    function clearTable(table) {
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
+        }
+    }
+
+    function formatTime(date) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+</script>
+
+</body>
+</html>
